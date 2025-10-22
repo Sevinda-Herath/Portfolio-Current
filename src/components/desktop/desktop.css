@@ -1,0 +1,78 @@
+/* Desktop layout */
+.desktop-root {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #1e1e1e; /* fallback */
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* center truly centered */
+  align-items: center;
+  background: rgba(30, 30, 30, 0.85);
+  color: #e5e5e5;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 20;
+}
+.topbar-left { padding-left: 12px; }
+.topbar-center { justify-self: center; font-weight: 600; }
+.topbar-right { justify-self: end; padding-right: 12px; }
+
+.logout-btn {
+  background: #d9534f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.logout-btn:focus { outline: 2px solid #ffb3b0; outline-offset: 2px; }
+.logout-btn:hover { background: #c9302c; }
+
+.desktop-canvas {
+  position: absolute;
+  inset: 0;
+  top: 44px; /* below topbar */
+}
+
+.desktop-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.desktop-wallpaper {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  /* default gradient wallpaper */
+  background-image: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 50%, #fdbb2d 100%);
+}
+.desktop-wallpaper.with-video {
+  /* make sure gradient is still there as subtle overlay */
+  background-color: rgba(0,0,0,0.15);
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .topbar { height: 40px; }
+  .desktop-canvas { top: 40px; }
+  .topbar-center { font-size: 14px; }
+  .logout-btn { padding: 5px 8px; font-size: 13px; }
+}

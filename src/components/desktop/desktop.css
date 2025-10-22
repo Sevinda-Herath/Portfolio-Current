@@ -31,9 +31,14 @@
   background: #d9534f;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 6px 10px;
-  font-size: 14px;
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 .logout-btn:focus { outline: 2px solid #ffb3b0; outline-offset: 2px; }
@@ -279,6 +284,83 @@
   .icons-grid { grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); gap: 14px 8px; }
   .desktop-icon-art { font-size: 32px; }
 }
+
+/* Shutdown Prompt (GNOME-like) */
+.shutdown-prompt-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+.shutdown-prompt {
+  width: min(520px, 92vw);
+  background: rgba(28, 28, 28, 0.98);
+  color: #f0f0f0;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+}
+.shutdown-prompt-header {
+  padding: 14px 16px 0 16px;
+}
+.shutdown-prompt-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.shutdown-prompt-body {
+  padding: 8px 16px 0 16px;
+  color: #dcdcdc;
+}
+.shutdown-prompt-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px;
+}
+.shutdown-prompt .btn-secondary,
+.shutdown-prompt .btn-primary {
+  min-width: 96px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.08);
+  color: #f0f0f0;
+  cursor: pointer;
+}
+.shutdown-prompt .btn-secondary:hover { background: rgba(255,255,255,0.14); }
+.shutdown-prompt .btn-primary {
+  background: #d9534f;
+  border-color: rgba(0,0,0,0.15);
+}
+.shutdown-prompt .btn-primary:hover { background: #c9302c; }
+
+/* Shutdown Screen */
+.shutdown-overlay {
+  position: fixed;
+  inset: 0;
+  background: #0b0b0b;
+  color: #d6d6d6;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.shutdown-terminal {
+  width: min(900px, 92vw);
+  height: min(70vh, 520px);
+  border: 1px solid rgba(255,255,255,0.1);
+  background: #0f0f0f;
+  padding: 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.6);
+}
+.shutdown-line { white-space: pre; }
 
 @media (max-width: 540px) {
   /* Explicitly remove grab cursor on small screens */

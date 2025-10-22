@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-export default function TopBar() {
+export default function TopBar({ onLogoutRequested }) {
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
@@ -16,9 +16,12 @@ export default function TopBar() {
   });
 
   const onLogout = () => {
-    try {
-      localStorage.clear();
-    } catch {}
+    if (typeof onLogoutRequested === 'function') {
+      onLogoutRequested();
+      return;
+    }
+    // Fallback: immediate clear + redirect
+    try { localStorage.clear(); } catch {}
     window.location.href = 'https://google.com';
   };
 
@@ -31,8 +34,9 @@ export default function TopBar() {
         {formatter.format(now)}
       </div>
       <div className="topbar-right">
-        <button className="logout-btn" onClick={onLogout} aria-label="Log out and exit">
-          Logout
+        <button className="logout-btn" onClick={onLogout} aria-label="Log out" title="Log out">
+          {/* Power icon */}
+          <span aria-hidden>⏻</span>
         </button>
       </div>
     </div>

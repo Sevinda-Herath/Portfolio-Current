@@ -6,6 +6,8 @@ import './desktop.css';
 import AboutApp from '../apps/AboutApp';
 import ProjectsApp from '../apps/ProjectsApp';
 import ContactApp from '../apps/ContactApp';
+import ShutdownPrompt from '../shutdown/ShutdownPrompt';
+import ShutdownScreen from '../shutdown/ShutdownScreen';
 
 /**
  * Desktop
@@ -30,6 +32,8 @@ export default function Desktop({
   const [windows, setWindows] = useState([]); // { id, appId, title, minimized, z, x, y }
   const [zCounter, setZCounter] = useState(10);
   const [isSmall, setIsSmall] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [showShutdown, setShowShutdown] = useState(false);
 
   useEffect(() => {
     const update = () => setIsSmall(typeof window !== 'undefined' ? window.innerWidth <= 540 : false);
@@ -104,7 +108,7 @@ export default function Desktop({
 
   return (
     <div className="desktop-root">
-      <TopBar />
+      <TopBar onLogoutRequested={() => setShowPrompt(true)} />
       <div className="desktop-canvas" role="application">
         {backgroundVideoWebmUrl || backgroundVideoMp4Url ? (
           <video
@@ -192,6 +196,28 @@ export default function Desktop({
             })}
           </div>
         </div>
+
+        {/* Shutdown Prompt */}
+        {showPrompt && (
+          <ShutdownPrompt
+            onCancel={() => setShowPrompt(false)}
+            onConfirm={() => {
+              setShowPrompt(false);
+              setShowShutdown(true);
+            }}
+          />
+        )}
+
+        {/* Shutdown Screen */}
+        {showShutdown && (
+          <ShutdownScreen
+            durationMs={2200}
+            onComplete={() => {
+              try { localStorage.clear(); } catch {}
+              window.location.href = 'https://google.com';
+            }}
+          />
+        )}
       </div>
     </div>
   );

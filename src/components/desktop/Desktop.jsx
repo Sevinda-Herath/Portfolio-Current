@@ -109,6 +109,12 @@ export default function Desktop({ backgroundImageUrl, backgroundVideoUrl }) {
           style={backgroundImageUrl ? { backgroundImage: `url(${backgroundImageUrl})` } : undefined}
         />
 
+        {/* Background welcome text overlay */}
+        <div className="welcome-overlay" aria-hidden>
+          <h1 className="welcome-title">Hello, I'm Sevinda Herath</h1>
+          <p className="welcome-sub">Welcome to my website!</p>
+        </div>
+
         <div className="icons-grid">
           {apps.map((app) => (
             <DesktopIcon

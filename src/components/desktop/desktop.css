@@ -70,10 +70,58 @@
   background: rgba(0,0,0,0.2);
 }
 
+/* Background welcome overlay */
+.welcome-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 2; /* above wallpaper, below icons/windows */
+  pointer-events: none;
+  padding: 0 16px;
+}
+.welcome-title {
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  font-size: clamp(28px, 6vw, 64px);
+  line-height: 1.05;
+  background: linear-gradient(90deg, #ffffff 0%, #8ab4f8 40%, #bde0fe 60%, #ffffff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.35);
+  animation: shimmer 6s linear infinite, rise-in 600ms ease-out both;
+}
+.welcome-sub {
+  margin-top: 8px;
+  font-weight: 700;
+  font-size: clamp(14px, 2.6vw, 22px);
+  color: rgba(255,255,255,0.92);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  animation: fade-in 900ms ease-out 200ms both;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+@keyframes rise-in {
+  from { transform: translateY(8px) scale(0.99); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 /* Icons grid */
 .icons-grid {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
   gap: 16px 10px;

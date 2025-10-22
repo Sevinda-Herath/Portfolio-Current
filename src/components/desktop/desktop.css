@@ -176,7 +176,6 @@
   padding: 0 8px;
   background: rgba(0,0,0,0.25);
   border-bottom: 1px solid rgba(255,255,255,0.08);
-  cursor: grab;
   user-select: none;
 }
 .app-window-titlebar .title { font-weight: 600; }
@@ -211,6 +210,26 @@
   to { transform: scale(1); opacity: 1; }
 }
 
+/* Mobile mode enter/exit animations */
+/* On mobile, animate the inner wrapper so the outer can keep translateX(-50%) centering */
+.app-window[data-mobile="true"] { animation: none; }
+.app-window[data-mobile="true"] .app-window-inner { animation: mobile-in 200ms ease-out; }
+.app-window[data-mobile="true"][data-state="leaving"] .app-window-inner { animation: mobile-out 180ms ease-in forwards; }
+@keyframes mobile-in {
+  from { transform: translateY(12px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes mobile-out {
+  from { transform: translateY(0) scale(1); opacity: 1; }
+  to { transform: translateY(12px) scale(0.98); opacity: 0; }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .app-window,
+  .app-window .app-window-inner { animation: none !important; }
+}
+
 /* Dock for minimized windows */
 .dock {
   position: fixed;
@@ -218,19 +237,38 @@
   right: 0;
   bottom: 10px;
   display: flex;
-  gap: 8px;
   justify-content: center;
   z-index: 3;
+}
+.dock-glass {
+  display: flex;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px) saturate(1.2);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
 }
 .dock-item {
   background: rgba(0,0,0,0.5);
   color: #eee;
   border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 8px;
-  padding: 6px 10px;
+  border-radius: 10px;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease;
 }
 .dock-item:hover { background: rgba(0,0,0,0.65); }
+.dock-item:active { transform: translateY(1px) scale(0.98); }
+.dock-icon { font-size: 22px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5)); }
+
+.app-window[data-draggable="true"] .app-window-titlebar { cursor: grab; }
 
 /* Responsive tweaks */
 @media (max-width: 600px) {
@@ -240,5 +278,37 @@
   .logout-btn { padding: 5px 8px; font-size: 13px; }
   .icons-grid { grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); gap: 14px 8px; }
   .desktop-icon-art { font-size: 32px; }
-  .app-window { width: 96vw; height: 70vh; left: 2vw; transform: none; }
+}
+
+@media (max-width: 540px) {
+  /* Explicitly remove grab cursor on small screens */
+  .app-window .app-window-titlebar { cursor: default; }
+  /* Center window and fit display like a mobile app */
+  .app-window {
+    position: fixed;
+    top: 48px; /* a bit below the top bar */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 96vw;
+    height: calc(100vh - 48px - 16px); /* below top bar with small bottom margin */
+    max-width: 96vw;
+    max-height: calc(100vh - 48px - 16px);
+    /* Make interface more opaque on mobile for readability */
+    background: rgba(20, 20, 20, 0.98);
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+  .app-window-content {
+    height: calc(100% - 36px);
+  }
+
+  /* Denser titlebar and topbar transparency on mobile */
+  .app-window-titlebar { background: rgba(0, 0, 0, 0.45); }
+  .topbar { background: rgba(20, 20, 20, 0.95); }
+
+  /* Slightly stronger wallpaper/video tint for contrast */
+  .desktop-wallpaper.with-video { background: rgba(0, 0, 0, 0.35); }
+
+  /* Improve legibility of labels and dock */
+  .desktop-icon-title { background: rgba(0, 0, 0, 0.5); }
+  .dock-item { background: rgba(0, 0, 0, 0.7); }
 }

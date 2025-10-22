@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 export default function AppWindow({
   id,
@@ -8,6 +8,8 @@ export default function AppWindow({
   x,
   y,
   isFocused,
+  canDrag = true,
+  isMobileMode = false,
   onFocus,
   onClose,
   onMinimize,
@@ -18,8 +20,10 @@ export default function AppWindow({
 
   const titleId = `window-title-${id}`;
   const draggingRef = useRef(null);
+  const [leaving, setLeaving] = useState(false);
 
   const onPointerDown = (e) => {
+    if (!canDrag) return;
     // Only begin drag if initiating on the titlebar area and NOT on window controls
     const target = e.target;
     if (!(target.closest && target.closest('.app-window-titlebar'))) return;
@@ -30,6 +34,7 @@ export default function AppWindow({
   };
 
   const onPointerMove = (e) => {
+    if (!canDrag) return;
     if (!draggingRef.current) return;
     const { startX, startY, baseX, baseY } = draggingRef.current;
     const dx = e.clientX - startX;
@@ -48,7 +53,7 @@ export default function AppWindow({
   return (
     <div
       className="app-window"
-      style={{ zIndex, left: x || 0, top: y || 0 }}
+      style={canDrag ? { zIndex, left: x || 0, top: y || 0 } : { zIndex }}
       role="dialog"
       aria-labelledby={titleId}
       onMouseDown={onFocus}
@@ -56,16 +61,43 @@ export default function AppWindow({
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       data-focused={isFocused ? 'true' : 'false'}
+      data-draggable={canDrag ? 'true' : 'false'}
+      data-mobile={isMobileMode ? 'true' : 'false'}
+      data-state={leaving ? 'leaving' : 'entered'}
     >
-      <div className="app-window-titlebar">
+      <div className="app-window-inner">
+        <div className="app-window-titlebar">
         <div className="title" id={titleId}>{title}</div>
         <div className="window-controls" onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
-          <button type="button" className="win-btn minimize" onClick={onMinimize} aria-label={`Minimize ${title}`}>_</button>
-          <button type="button" className="win-btn close" onClick={onClose} aria-label={`Close ${title}`}>×</button>
+          <button
+            type="button"
+            className="win-btn minimize"
+            onClick={() => {
+              if (!isMobileMode) return onMinimize?.();
+              setLeaving(true);
+              setTimeout(() => onMinimize?.(), 180);
+            }}
+            aria-label={`Minimize ${title}`}
+          >
+            _
+          </button>
+          <button
+            type="button"
+            className="win-btn close"
+            onClick={() => {
+              if (!isMobileMode) return onClose?.();
+              setLeaving(true);
+              setTimeout(() => onClose?.(), 180);
+            }}
+            aria-label={`Close ${title}`}
+          >
+            ×
+          </button>
         </div>
-      </div>
-      <div className="app-window-content">
-        {children}
+        </div>
+        <div className="app-window-content">
+          {children}
+        </div>
       </div>
     </div>
   );

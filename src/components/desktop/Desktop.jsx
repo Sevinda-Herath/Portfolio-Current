@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import TopBar from './TopBar';
 import DesktopIcon from './DesktopIcon';
 import AppWindow from './AppWindow';
@@ -29,6 +29,14 @@ export default function Desktop({
 
   const [windows, setWindows] = useState([]); // { id, appId, title, minimized, z, x, y }
   const [zCounter, setZCounter] = useState(10);
+  const [isSmall, setIsSmall] = useState(false);
+
+  useEffect(() => {
+    const update = () => setIsSmall(typeof window !== 'undefined' ? window.innerWidth <= 540 : false);
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
 
   const bringToFront = (id) => {
     setWindows((wins) => {
@@ -153,6 +161,8 @@ export default function Desktop({
               x={w.x}
               y={w.y}
               isFocused={w.z === maxZ}
+              isMobileMode={isSmall}
+              canDrag={!isSmall}
               onFocus={() => bringToFront(w.id)}
               onClose={() => closeWindow(w.id)}
               onMinimize={() => minimizeWindow(w.id)}
@@ -164,15 +174,23 @@ export default function Desktop({
         })}
 
         <div className="dock">
-          {windows.filter((w) => w.minimized).map((w) => (
-            <button
-              key={`dock-${w.id}`}
-              className="dock-item"
-              onClick={() => restoreFromDock(w.id)}
-            >
-              {w.title}
-            </button>
-          ))}
+          <div className="dock-glass">
+            {windows.filter((w) => w.minimized).map((w) => {
+              const app = apps.find((a) => a.id === w.appId);
+              const icon = app?.icon ?? '🗔';
+              return (
+                <button
+                  key={`dock-${w.id}`}
+                  className="dock-item"
+                  onClick={() => restoreFromDock(w.id)}
+                  aria-label={`Restore ${w.title}`}
+                  title={w.title}
+                >
+                  <span className="dock-icon" aria-hidden>{icon}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

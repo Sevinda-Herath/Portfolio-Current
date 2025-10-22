@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import './App.css';
 import LoadingScreen from './components/boot/LoadingScreen';
 import Desktop from './components/desktop/Desktop';
+import backgroundVideo from './assets/the-abyss-hollow-knight.1920x1080.mp4';
 
 function App() {
   const isTest = import.meta?.env?.MODE === 'test';
@@ -36,7 +37,7 @@ function App() {
       )}
       <Desktop
         backgroundImageUrl={undefined}
-        backgroundVideoUrl={undefined}
+        backgroundVideoUrl={backgroundVideo}
       />
     </>
   );

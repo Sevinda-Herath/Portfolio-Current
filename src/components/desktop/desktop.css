@@ -60,13 +60,14 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  z-index: 0;
+  z-index: 1; /* above video when acting as overlay */
   /* default gradient wallpaper */
   background-image: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 50%, #fdbb2d 100%);
 }
 .desktop-wallpaper.with-video {
-  /* make sure gradient is still there as subtle overlay */
-  background-color: rgba(0,0,0,0.15);
+  /* remove gradient image so video is visible, add subtle tint overlay */
+  background-image: none;
+  background: rgba(0,0,0,0.2);
 }
 
 /* Responsive tweaks */

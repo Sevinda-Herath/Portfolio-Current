@@ -1,0 +1,91 @@
+/* Shared styles for boot experience */
+.boot-root,
+.boot-screen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  z-index: 9999;
+}
+
+/* GRUB look */
+.boot-screen.grub {
+  background: #000; /* classic black */
+  color: #ddd;
+}
+.grub-frame {
+  border: 1px solid #666;
+  padding: 16px 20px;
+  width: min(640px, 92vw);
+  box-shadow: 0 0 0 2px #222 inset;
+}
+.grub-title {
+  color: #9ab;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+.grub-menu {
+  list-style: none;
+  margin: 0 0 12px 0;
+  padding: 0;
+  border: 1px solid #666;
+}
+.grub-menu li {
+  padding: 8px 10px;
+}
+.grub-menu li.selected {
+  background: linear-gradient(90deg, #204a87 0%, #3465a4 100%);
+  color: #fff;
+}
+.grub-help {
+  color: #aaa;
+  font-size: 12px;
+}
+.grub-countdown {
+  margin-top: 8px;
+  color: #bbb;
+}
+
+/* Debian boot log */
+.boot-screen.debian {
+  background: #000;
+  color: #90ee90; /* pale green */
+  text-shadow: 0 0 1px rgba(144, 238, 144, 0.4);
+}
+.boot-log {
+  width: min(900px, 92vw);
+  height: min(540px, 70vh);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.boot-line {
+  white-space: pre-wrap;
+  line-height: 1.35;
+  font-size: clamp(12px, 2.2vw, 15px);
+}
+.cursor {
+  animation: blink 1s steps(1, end) infinite;
+}
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+.skip-hint {
+  position: absolute;
+  bottom: 14px;
+  right: 16px;
+  color: #888;
+  font-size: 12px;
+}
+
+/* Responsiveness */
+@media (max-width: 480px) {
+  .grub-frame { padding: 12px 12px; }
+  .grub-menu li { padding: 6px 8px; }
+}

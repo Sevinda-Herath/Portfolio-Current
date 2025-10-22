@@ -37,7 +37,7 @@ function App() {
       )}
       <Desktop
         backgroundImageUrl={undefined}
-        backgroundVideoUrl={backgroundVideo}
+        backgroundVideoUrl={undefined}
       />
     </>
   );

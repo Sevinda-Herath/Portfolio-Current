@@ -70,10 +70,114 @@
   background: rgba(0,0,0,0.2);
 }
 
+/* Icons grid */
+.icons-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 16px 10px;
+  width: min(900px, 94vw);
+  padding: 16px;
+}
+
+.desktop-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: #f0f0f0;
+  cursor: pointer;
+}
+.desktop-icon:focus { outline: 2px solid #8ab4f8; outline-offset: 2px; }
+.desktop-icon-art {
+  font-size: 36px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6));
+}
+.desktop-icon-title {
+  font-size: 13px;
+  background: rgba(0,0,0,0.35);
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Windows */
+.app-window {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(320px, 60vw, 900px);
+  height: clamp(260px, 60vh, 70vh);
+  background: rgba(30, 30, 30, 0.92);
+  color: #e8e8e8;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  overflow: hidden;
+}
+
+.app-window-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 36px;
+  padding: 0 8px;
+  background: rgba(0,0,0,0.25);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.app-window-titlebar .title { font-weight: 600; }
+.window-controls { display: flex; gap: 6px; }
+.win-btn {
+  width: 28px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.1);
+  color: #f6f6f6;
+  cursor: pointer;
+}
+.win-btn:hover { background: rgba(255,255,255,0.2); }
+.win-btn.close { background: #d9534f; }
+.win-btn.close:hover { background: #c9302c; }
+
+.app-window-content {
+  padding: 12px 14px;
+  height: calc(100% - 36px);
+  overflow: auto;
+}
+
+/* Dock for minimized windows */
+.dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  z-index: 3;
+}
+.dock-item {
+  background: rgba(0,0,0,0.5);
+  color: #eee;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.dock-item:hover { background: rgba(0,0,0,0.65); }
+
 /* Responsive tweaks */
 @media (max-width: 600px) {
   .topbar { height: 40px; }
   .desktop-canvas { top: 40px; }
   .topbar-center { font-size: 14px; }
   .logout-btn { padding: 5px 8px; font-size: 13px; }
+  .icons-grid { grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); gap: 14px 8px; }
+  .desktop-icon-art { font-size: 32px; }
+  .app-window { width: 96vw; height: 70vh; left: 2vw; transform: none; }
 }

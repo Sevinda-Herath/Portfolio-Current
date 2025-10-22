@@ -3,8 +3,12 @@ import './App.css';
 import LoadingScreen from './components/boot/LoadingScreen';
 import LoginScreen from './components/login/LoginScreen';
 import Desktop from './components/desktop/Desktop';
-import backgroundVideo from './assets/the-abyss-hollow-knight.1920x1080.mp4';
-import loginVideo from './assets/the-knights-quiet-rest.1920x1080.mp4';
+import backgroundVideoWebm from './assets/the-abyss-hollow-knight.1920x1080.webm';
+import backgroundVideoMp4 from './assets/the-abyss-hollow-knight.1920x1080.mp4';
+import backgroundPoster from './assets/the-abyss-hollow-knight.1920x1080.png';
+import loginVideoWebm from './assets/the-knights-quiet-rest.1920x1080.webm';
+import loginVideoMp4 from './assets/the-knights-quiet-rest.1920x1080.mp4';
+import loginPoster from './assets/the-knights-quiet-rest.1920x1080.png';
 import { preloadVideos } from './utils/preloadMedia';
 
 function App() {
@@ -57,7 +61,12 @@ function App() {
   // Preload background videos as early as possible to reduce visual delay
   useEffect(() => {
     if (isTest) return; // skip in tests
-    preloadVideos([loginVideo, backgroundVideo]);
+    preloadVideos([
+      loginVideoWebm,
+      loginVideoMp4,
+      backgroundVideoWebm,
+      backgroundVideoMp4,
+    ]);
   }, []);
 
   return (
@@ -68,14 +77,18 @@ function App() {
       {!showBoot && showLogin && (
         <LoginScreen
           onComplete={() => setShowLogin(false)}
-          backgroundVideoUrl={loginVideo}
+          backgroundVideoWebmUrl={loginVideoWebm}
+          backgroundVideoMp4Url={loginVideoMp4}
+          backgroundPosterUrl={loginPoster}
           backgroundImageUrl={undefined}
         />
       )}
       {!showBoot && !showLogin && (
         <Desktop
           backgroundImageUrl={undefined}
-          backgroundVideoUrl={backgroundVideo}
+          backgroundVideoWebmUrl={backgroundVideoWebm}
+          backgroundVideoMp4Url={backgroundVideoMp4}
+          backgroundPosterUrl={backgroundPoster}
         />
       )}
     </>

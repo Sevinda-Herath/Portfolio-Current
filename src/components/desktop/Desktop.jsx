@@ -13,7 +13,12 @@ import ContactApp from '../apps/ContactApp';
  * - backgroundImageUrl?: string — path to a wallpaper image (e.g., '/wallpaper.jpg')
  * - backgroundVideoUrl?: string — path to a wallpaper video (e.g., '/wallpaper.mp4')
  */
-export default function Desktop({ backgroundImageUrl, backgroundVideoUrl }) {
+export default function Desktop({
+  backgroundImageUrl,
+  backgroundVideoWebmUrl,
+  backgroundVideoMp4Url,
+  backgroundPosterUrl,
+}) {
   const apps = useMemo(
     () => [
       { id: 'about', title: 'About', icon: '👤', component: AboutApp },
@@ -93,20 +98,27 @@ export default function Desktop({ backgroundImageUrl, backgroundVideoUrl }) {
     <div className="desktop-root">
       <TopBar />
       <div className="desktop-canvas" role="application">
-        {backgroundVideoUrl ? (
+        {backgroundVideoWebmUrl || backgroundVideoMp4Url ? (
           <video
             className="desktop-bg-video"
-            src={backgroundVideoUrl}
             preload="auto"
             autoPlay
             muted
             loop
             playsInline
             aria-hidden
-          />
+            poster={backgroundPosterUrl}
+          >
+            {backgroundVideoWebmUrl ? (
+              <source src={backgroundVideoWebmUrl} type="video/webm" />
+            ) : null}
+            {backgroundVideoMp4Url ? (
+              <source src={backgroundVideoMp4Url} type="video/mp4" />
+            ) : null}
+          </video>
         ) : null}
         <div
-          className={`desktop-wallpaper ${backgroundVideoUrl ? 'with-video' : ''}`}
+          className={`desktop-wallpaper ${backgroundVideoWebmUrl || backgroundVideoMp4Url ? 'with-video' : ''}`}
           style={backgroundImageUrl ? { backgroundImage: `url(${backgroundImageUrl})` } : undefined}
         />
 

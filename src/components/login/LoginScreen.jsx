@@ -6,13 +6,17 @@ import './login.css';
  * Props:
  * - onComplete: () => void
  * - backgroundImageUrl?: string
- * - backgroundVideoUrl?: string
+ * - backgroundVideoWebmUrl?: string
+ * - backgroundVideoMp4Url?: string
+ * - backgroundPosterUrl?: string
  * - username?: string (default: 'Sevinda')
  */
 export default function LoginScreen({
   onComplete,
   backgroundImageUrl,
-  backgroundVideoUrl,
+  backgroundVideoWebmUrl,
+  backgroundVideoMp4Url,
+  backgroundPosterUrl,
   username = 'Sevinda-Herath',
 }) {
   const [typedUser, setTypedUser] = useState('');
@@ -67,20 +71,27 @@ export default function LoginScreen({
       role="dialog"
       aria-label="Login"
     >
-      {backgroundVideoUrl ? (
+      {backgroundVideoWebmUrl || backgroundVideoMp4Url ? (
         <video
           className="login-bg-video"
-          src={backgroundVideoUrl}
           preload="auto"
           autoPlay
           muted
           loop
           playsInline
           aria-hidden
-        />
+          poster={backgroundPosterUrl}
+        >
+          {backgroundVideoWebmUrl ? (
+            <source src={backgroundVideoWebmUrl} type="video/webm" />
+          ) : null}
+          {backgroundVideoMp4Url ? (
+            <source src={backgroundVideoMp4Url} type="video/mp4" />
+          ) : null}
+        </video>
       ) : null}
       <div
-        className={`login-wallpaper ${backgroundVideoUrl ? 'with-video' : ''}`}
+        className={`login-wallpaper ${backgroundVideoWebmUrl || backgroundVideoMp4Url ? 'with-video' : ''}`}
         style={backgroundImageUrl ? { backgroundImage: `url(${backgroundImageUrl})` } : undefined}
       />
 

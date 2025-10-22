@@ -22,7 +22,7 @@ export default function Desktop({ backgroundImageUrl, backgroundVideoUrl }) {
     ], []
   );
 
-  const [windows, setWindows] = useState([]); // { id, appId, title, minimized, z }
+  const [windows, setWindows] = useState([]); // { id, appId, title, minimized, z, x, y }
   const [zCounter, setZCounter] = useState(10);
 
   const bringToFront = (id) => {
@@ -48,6 +48,9 @@ export default function Desktop({ backgroundImageUrl, backgroundVideoUrl }) {
       if (!app) return wins;
       const nextZ = zCounter + 1;
       setZCounter(nextZ);
+      const count = wins.length;
+      const baseX = 80 + (count % 5) * 40;
+      const baseY = 90 + (count % 5) * 30;
       return [
         ...wins,
         {
@@ -56,6 +59,8 @@ export default function Desktop({ backgroundImageUrl, backgroundVideoUrl }) {
           title: app.title,
           minimized: false,
           z: nextZ,
+          x: baseX,
+          y: baseY,
         },
       ];
     });
@@ -64,6 +69,25 @@ export default function Desktop({ backgroundImageUrl, backgroundVideoUrl }) {
   const closeWindow = (id) => setWindows((wins) => wins.filter((w) => w.id !== id));
   const minimizeWindow = (id) =>
     setWindows((wins) => wins.map((w) => (w.id === id ? { ...w, minimized: true } : w)));
+
+  const restoreFromDock = (id) => {
+    const nextZ = zCounter + 1;
+    setZCounter(nextZ);
+    setWindows((wins) => wins.map((w) => (w.id === id ? { ...w, minimized: false, z: nextZ } : w)));
+  };
+
+  const dragWindow = (id, nextX, nextY) => {
+    // Clamp to viewport with some margins
+    const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+    const topbar = 44;
+    const minX = 0, minY = topbar;
+    const maxX = vw - 200; // conservative width estimate
+    const maxY = vh - 120; // conservative height estimate
+    const clampedX = Math.max(minX, Math.min(nextX, maxX));
+    const clampedY = Math.max(minY, Math.min(nextY, maxY));
+    setWindows((wins) => wins.map((w) => (w.id === id ? { ...w, x: clampedX, y: clampedY } : w)));
+  };
 
   return (
     <div className="desktop-root">
@@ -99,6 +123,7 @@ export default function Desktop({ backgroundImageUrl, backgroundVideoUrl }) {
         {windows.map((w) => {
           const app = apps.find((a) => a.id === w.appId);
           const Comp = app?.component ?? (() => null);
+          const maxZ = windows.filter((x) => !x.minimized).reduce((m, x) => Math.max(m, x.z), 0);
           return (
             <AppWindow
               key={w.id}
@@ -106,9 +131,13 @@ export default function Desktop({ backgroundImageUrl, backgroundVideoUrl }) {
               title={w.title}
               zIndex={w.z}
               minimized={w.minimized}
+              x={w.x}
+              y={w.y}
+              isFocused={w.z === maxZ}
               onFocus={() => bringToFront(w.id)}
               onClose={() => closeWindow(w.id)}
               onMinimize={() => minimizeWindow(w.id)}
+              onDrag={(nx, ny) => dragWindow(w.id, nx, ny)}
             >
               <Comp />
             </AppWindow>
@@ -120,7 +149,7 @@ export default function Desktop({ backgroundImageUrl, backgroundVideoUrl }) {
             <button
               key={`dock-${w.id}`}
               className="dock-item"
-              onClick={() => bringToFront(w.id)}
+              onClick={() => restoreFromDock(w.id)}
             >
               {w.title}
             </button>

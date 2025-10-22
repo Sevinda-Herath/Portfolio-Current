@@ -108,16 +108,16 @@
 .app-window {
   position: absolute;
   top: 70px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 80px;
   width: clamp(320px, 60vw, 900px);
   height: clamp(260px, 60vh, 70vh);
   background: rgba(30, 30, 30, 0.92);
   color: #e8e8e8;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
   overflow: hidden;
+  animation: window-pop 160ms ease-out;
 }
 
 .app-window-titlebar {
@@ -128,9 +128,12 @@
   padding: 0 8px;
   background: rgba(0,0,0,0.25);
   border-bottom: 1px solid rgba(255,255,255,0.08);
+  cursor: grab;
+  user-select: none;
 }
 .app-window-titlebar .title { font-weight: 600; }
 .window-controls { display: flex; gap: 6px; }
+.window-controls { cursor: default; }
 .win-btn {
   width: 28px;
   height: 24px;
@@ -148,6 +151,16 @@
   padding: 12px 14px;
   height: calc(100% - 36px);
   overflow: auto;
+}
+
+.app-window[data-focused="true"] {
+  box-shadow: 0 12px 36px rgba(0,0,0,0.6), 0 0 0 1px rgba(138, 180, 248, 0.25);
+  border-color: rgba(138, 180, 248, 0.35);
+}
+
+@keyframes window-pop {
+  from { transform: scale(0.98); opacity: 0.9; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 /* Dock for minimized windows */

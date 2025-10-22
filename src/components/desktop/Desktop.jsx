@@ -97,6 +97,7 @@ export default function Desktop({ backgroundImageUrl, backgroundVideoUrl }) {
           <video
             className="desktop-bg-video"
             src={backgroundVideoUrl}
+            preload="auto"
             autoPlay
             muted
             loop

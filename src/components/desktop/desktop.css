@@ -164,13 +164,24 @@
   left: 80px;
   width: clamp(320px, 60vw, 900px);
   height: clamp(260px, 60vh, 70vh);
-  background: rgba(30, 30, 30, 0.92);
+  background: rgba(30, 30, 30, 0.96);
   color: #e8e8e8;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.35);
   overflow: hidden;
   animation: window-pop 160ms ease-out;
+  /* anchor for scroll fades placed as siblings to inner */
+  /* already positioned, so absolute children will anchor here */
+}
+
+/* Make inner wrapper fill the window and allow flex layout */
+.app-window-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0; /* allow children to shrink and scroll */
+  position: relative; /* anchor outside fades */
 }
 
 .app-window-titlebar {
@@ -182,6 +193,8 @@
   background: rgba(0,0,0,0.25);
   border-bottom: 1px solid rgba(255,255,255,0.08);
   user-select: none;
+  -webkit-user-select: none;
+  touch-action: none; /* allow custom pointer-based dragging on touch */
 }
 .app-window-titlebar .title { font-weight: 600; }
 .window-controls { display: flex; gap: 6px; }
@@ -201,8 +214,50 @@
 
 .app-window-content {
   padding: 12px 14px;
-  height: calc(100% - 36px);
+  flex: 1 1 auto; /* take remaining space under the titlebar */
+  min-height: 0; /* critical for flex children to allow overflow */
   overflow: auto;
+  overflow-y: scroll; /* force vertical scrollbar to be visible */
+  -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+  overscroll-behavior: contain; /* prevent background scroll chaining */
+  scrollbar-gutter: stable both-edges; /* reserve space to avoid layout shift */
+  touch-action: pan-y; /* ensure vertical scroll gestures work reliably */
+  /* Make scrollbar visible and styled across browsers */
+  scrollbar-width: auto; /* Firefox: auto width (use 'thin' if preferred) */
+  scrollbar-color: rgba(180, 190, 210, 0.9) rgba(255, 255, 255, 0.08); /* thumb track */
+}
+
+/* Scroll fade indicator (bottom only) outside the content area */
+.scroll-fade-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 14px;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+.scroll-fade-bottom {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(30,30,30,0.96), rgba(30,30,30,0));
+}
+.scroll-fade-bottom.visible { opacity: 1; }
+
+/* WebKit scrollbar styling */
+.app-window-content::-webkit-scrollbar { width: 12px; height: 12px; }
+.app-window-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+.app-window-content::-webkit-scrollbar-thumb {
+  background-color: rgba(180, 190, 210, 0.9);
+  border-radius: 8px;
+  border: 2px solid transparent; /* creates inset effect */
+  background-clip: padding-box;
+}
+.app-window-content::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(200, 210, 230, 0.95);
 }
 
 .app-window[data-focused="true"] {
@@ -283,6 +338,12 @@
   .logout-btn { padding: 5px 8px; font-size: 13px; }
   .icons-grid { grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); gap: 14px 8px; }
   .desktop-icon-art { font-size: 32px; }
+}
+
+/* Improve drag handle size and controls on touch devices */
+@media (pointer: coarse) {
+  .app-window-titlebar { height: 44px; padding: 0 10px; }
+  .win-btn { width: 34px; height: 28px; }
 }
 
 /* Shutdown Prompt (GNOME-like) */
@@ -379,9 +440,8 @@
     background: rgba(20, 20, 20, 0.98);
     border-color: rgba(255, 255, 255, 0.18);
   }
-  .app-window-content {
-    height: calc(100% - 36px);
-  }
+  .app-window-inner { height: 100%; }
+  .app-window-content { flex: 1 1 auto; min-height: 0; }
 
   /* Denser titlebar and topbar transparency on mobile */
   .app-window-titlebar { background: rgba(0, 0, 0, 0.45); }

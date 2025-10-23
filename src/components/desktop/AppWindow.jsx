@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 export default function AppWindow({
   id,
@@ -21,6 +21,27 @@ export default function AppWindow({
   const titleId = `window-title-${id}`;
   const draggingRef = useRef(null);
   const [leaving, setLeaving] = useState(false);
+  const contentRef = useRef(null);
+  const [hasBottomFade, setHasBottomFade] = useState(false);
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    const updateFades = () => {
+      const { scrollTop, scrollHeight, clientHeight } = el;
+      setHasBottomFade(scrollTop + clientHeight < scrollHeight - 1);
+    };
+    updateFades();
+    el.addEventListener('scroll', updateFades);
+    window.addEventListener('resize', updateFades);
+    const ro = new (window.ResizeObserver || class { observe(){} disconnect(){} })((entries) => updateFades());
+    try { ro.observe(el); } catch {}
+    return () => {
+      el.removeEventListener('scroll', updateFades);
+      window.removeEventListener('resize', updateFades);
+      try { ro.disconnect(); } catch {}
+    };
+  }, [children]);
 
   const onPointerDown = (e) => {
     if (!canDrag) return;
@@ -28,17 +49,27 @@ export default function AppWindow({
     const target = e.target;
     if (!(target.closest && target.closest('.app-window-titlebar'))) return;
     if (target.closest('.window-controls') || target.closest('.win-btn')) return;
+    // Improve touch behavior: prevent browser panning/scroll gestures from hijacking drag
+    if (e.pointerType === 'touch') {
+      try { e.preventDefault(); } catch {}
+    }
     try { e.currentTarget.setPointerCapture(e.pointerId); } catch {}
-    draggingRef.current = { startX: e.clientX, startY: e.clientY, baseX: x || 0, baseY: y || 0 };
+    draggingRef.current = { startX: e.clientX, startY: e.clientY, baseX: x || 0, baseY: y || 0, active: false };
     onFocus?.();
   };
 
   const onPointerMove = (e) => {
     if (!canDrag) return;
     if (!draggingRef.current) return;
-    const { startX, startY, baseX, baseY } = draggingRef.current;
+    const { startX, startY, baseX, baseY, active } = draggingRef.current;
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
+    // Require a small movement threshold to avoid accidental drags on touch
+    if (!active) {
+      const dist = Math.hypot(dx, dy);
+      if (dist < 6) return;
+      draggingRef.current.active = true;
+    }
     const nextX = baseX + dx;
     const nextY = baseY + dy;
     onDrag?.(nextX, nextY);
@@ -95,10 +126,13 @@ export default function AppWindow({
           </button>
         </div>
         </div>
-        <div className="app-window-content">
+        <div className="app-window-content" ref={contentRef}>
           {children}
         </div>
       </div>
+
+      {/* Bottom fade sits outside the scroll area and the inner wrapper */}
+      <div className={`scroll-fade-bottom${hasBottomFade ? ' visible' : ''}`} aria-hidden />
     </div>
   );
 }

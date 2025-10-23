@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './login.css';
+import whiteLogo from '../../assets/white_logo.png';
 
 /**
  * GNOME-like login screen (aesthetic only)
@@ -90,7 +91,9 @@ export default function LoginScreen({
       </div>
 
       <div className="login-panel">
-        <div className="avatar" aria-hidden>🧑‍💻</div>
+        <div className="avatar" aria-hidden>
+          <img src={whiteLogo} alt="" />
+        </div>
         <div className="fields">
           <label className="field">
             <span className="label">Username</span>

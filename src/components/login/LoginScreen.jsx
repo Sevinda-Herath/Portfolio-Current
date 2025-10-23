@@ -21,7 +21,7 @@ export default function LoginScreen({
 }) {
   const [typedUser, setTypedUser] = useState('');
   const [typedPass, setTypedPass] = useState('');
-  const [stage, setStage] = useState('typingUser'); // typingUser -> typingPass -> ready -> done
+  const [stage, setStage] = useState('typingUser'); // typingUser -> typingPass -> ready
   const containerRef = useRef(null);
 
   const password = useMemo(() => 'password', []);
@@ -44,22 +44,12 @@ export default function LoginScreen({
       } else {
         setStage('ready');
       }
-    } else if (stage === 'ready') {
-      t = setTimeout(() => {
-        setStage('done');
-        onComplete?.();
-      }, 1200);
     }
     return () => t && clearTimeout(t);
-  }, [stage, typedUser, typedPass, username, password, onComplete]);
+  }, [stage, typedUser, typedPass, username, password]);
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      onComplete?.();
-    }
-    if (e.key === 'Escape') {
-      onComplete?.();
-    }
+  const handleKeyDown = () => {
+    // Intentionally no-op: require clicking the Sign In button to proceed.
   };
 
   return (

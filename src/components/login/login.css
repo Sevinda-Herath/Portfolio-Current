@@ -82,9 +82,21 @@
   padding: 8px 14px;
   border-radius: 8px;
   cursor: pointer;
+  box-shadow: 0 0 14px 4px rgba(99, 102, 241, 0.45), 0 6px 24px rgba(0,0,0,0.35);
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+  animation: glow-pulse 2.4s ease-in-out infinite;
 }
-.login-btn:hover { background: #4338ca; }
+.login-btn:hover { background: #4338ca; transform: translateY(-1px); box-shadow: 0 0 18px 8px rgba(99, 102, 241, 0.55), 0 10px 30px rgba(0,0,0,0.45); }
 .login-btn:focus { outline: 2px solid #a5b4fc; outline-offset: 2px; }
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 14px 4px rgba(99, 102, 241, 0.42), 0 6px 24px rgba(0,0,0,0.35); }
+  50% { box-shadow: 0 0 22px 10px rgba(99, 102, 241, 0.6), 0 10px 28px rgba(0,0,0,0.45); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-btn { animation: none; }
+}
 
 @keyframes rise-in {
   from { transform: translateY(8px); opacity: 0; }

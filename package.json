@@ -20,6 +20,9 @@
   "scripts": {
     "start": "BROWSER=none WDS_SOCKET_PORT=0 vite --port 3000",
     "build": "vite build",
+    "build:deploy": "vite build --base ./",
+    "deploy:prepare": "rm -rf deploy && mkdir -p deploy && cp -r dist/* deploy/",
+    "deploy": "npm run build:deploy && npm run deploy:prepare",
     "preview": "vite preview",
     "test": "vitest"
   },

@@ -1,71 +1,68 @@
+## Portfolio (Vite + React)
 
-# GitHub Codespaces ♥️ React
+This is a Vite + React portfolio. A minimal, production-ready copy of the site lives in the `deploy/` folder so you can upload it to any host.
 
-Welcome to your shiny new Codespace running React! We've got everything fired up and running for you to explore React.
+The site builds to `dist/`. The `deploy/` folder is regenerated from `dist/` using the scripts below.
 
-You've got a blank canvas to work on from a git perspective as well. There's a single initial commit with the what you're seeing right now - where you go from here is up to you!
+## Update the deploy folder after changes
 
-Everything you do here is contained within this one codespace. There is no repository on GitHub yet. If and when you’re ready you can click "Publish Branch" and we’ll create your repository and push up your project. If you were just exploring then and have no further need for this code then you can simply delete your codespace and it's gone forever.
+Any time you edit the site and want to publish the latest version:
 
-This project was bootstrapped for you with [Vite](https://vitejs.dev/).
+1) Install dependencies (first time or after updates)
 
-## Available Scripts
+```bash
+npm ci
+```
 
-In the project directory, you can run:
+2) Rebuild with a portable base and refresh the minimal `deploy/` folder
 
-### `npm start`
+```bash
+npm run deploy
+```
 
-We've already run this for you in the `Codespaces: server` terminal window below. If you need to stop the server for any reason you can just run `npm start` again to bring it back online.
+That runs a production build with relative asset paths and copies only the necessary files into `deploy/`:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000/](http://localhost:3000/) in the built-in Simple Browser (`Cmd/Ctrl + Shift + P > Simple Browser: Show`) to view your running application.
+- `deploy/index.html`
+- `deploy/assets/` (bundled JS/CSS/images/videos)
+- `deploy/manifest.json`, `deploy/robots.txt`, `deploy/sitemap.xml`
 
-The page will reload automatically when you make changes.\
-You may also see any lint errors in the console.
+Upload the contents of `deploy/` to your hosting provider.
 
-### `npm test`
+## Commands and what they do
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+All commands are defined in `package.json` under `scripts`.
 
-### `npm run build`
+- `npm start`
+	- Starts the dev server on http://localhost:3000 with hot reload.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- `npm test`
+	- Runs the test suite via Vitest.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- `npm run build`
+	- Standard Vite production build to `dist/` using the base from `vite.config.js` (currently `/portfolio-new/`). Use this for GitHub Pages under this repo name.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- `npm run build:deploy`
+	- Production build to `dist/` with a portable relative base (`--base ./`). Use this when deploying the site anywhere (custom domain, subfolder, S3, etc.).
 
-## Learn More
+- `npm run deploy`
+	- Convenience script: runs `build:deploy`, then wipes and repopulates `deploy/` from `dist/`.
 
-You can learn more in the [Vite documentation](https://vitejs.dev/guide/).
+- `npm run preview`
+	- Serves the production build locally (useful for a quick sanity check). If your `vite.config.js` base is a subpath, you may need to open the subpath URL.
 
-To learn Vitest, a Vite-native testing framework, go to [Vitest documentation](https://vitest.dev/guide/)
+## Notes on base paths
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- GitHub Pages under this repository: keep `vite.config.js` base as `/portfolio-new/` and use `npm run build` (output expects that subpath).
+- Any other host or path: use `npm run build:deploy` or just `npm run deploy` to ensure assets use relative paths and work from any folder.
 
-### Code Splitting
+## Troubleshooting
 
-This section has moved here: [https://sambitsahoo.com/blog/vite-code-splitting-that-works.html](https://sambitsahoo.com/blog/vite-code-splitting-that-works.html)
+- Seeing 404s for JS/CSS after upload? Rebuild with `npm run build:deploy` (relative paths) and re-upload the `deploy/` contents.
+- SPA routing (client-side routes) showing 404s on refresh? Enable a fallback to `index.html` on your host (Netlify `_redirects`, Cloudflare Pages/Vercel setting, S3 static website error document).
+- Preview server already running? Free the port and restart preview.
 
-### Analyzing the Bundle Size
+## Learn more
 
-This section has moved here: [https://github.com/btd/rollup-plugin-visualizer#rollup-plugin-visualizer](https://github.com/btd/rollup-plugin-visualizer#rollup-plugin-visualizer)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://dev.to/hamdankhan364/simplifying-progressive-web-app-pwa-development-with-vite-a-beginners-guide-38cf](https://dev.to/hamdankhan364/simplifying-progressive-web-app-pwa-development-with-vite-a-beginners-guide-38cf)
-
-### Advanced Configuration
-
-This section has moved here: [https://vitejs.dev/guide/build.html#advanced-base-options](https://vitejs.dev/guide/build.html#advanced-base-options)
-
-### Deployment
-
-This section has moved here: [https://vitejs.dev/guide/build.html](https://vitejs.dev/guide/build.html)
-
-### Troubleshooting
-
-This section has moved here: [https://vitejs.dev/guide/troubleshooting.html](https://vitejs.dev/guide/troubleshooting.html)
+- Vite: https://vitejs.dev/guide/
+- Vitest: https://vitest.dev/guide/
+- React: https://react.dev/

@@ -1,0 +1,86 @@
+/* Contact app styles: modern, responsive, dark theme */
+
+.contact-app {
+  --bg: rgba(18, 18, 18, 0.9);
+  --panel: rgba(28, 28, 28, 0.98);
+  --muted: #b8c0cc;
+  --text: #f0f3f8;
+  --accent: #4f46e5;
+  --border: rgba(255,255,255,0.12);
+  --panel-border: rgba(255,255,255,0.14);
+  --shadow: 0 12px 36px rgba(0,0,0,0.45);
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.4fr;
+  gap: 14px;
+}
+
+.card {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: var(--shadow);
+}
+
+.profile-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: center;
+}
+.avatar {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 12px;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.35));
+}
+.id-block .title { margin: 0; font-size: 18px; font-weight: 700; }
+.id-block .subtitle { color: #d7def0; font-weight: 600; margin-top: 2px; font-size: 14px; }
+.id-block .muted { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+.blurb { margin: 12px 0 0 0; color: #e5eaf5; line-height: 1.6; }
+
+.methods .title { margin: 0 0 8px 0; font-size: 16px; font-weight: 700; }
+.method-list { display: grid; gap: 10px; }
+
+.method {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+}
+.method-info { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; }
+.icon { font-size: 22px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5)); }
+.text .label { color: #d1d9e6; font-size: 12px; }
+.text .value { font-weight: 600; }
+.text .link { color: #9ec1ff; text-decoration: none; word-break: break-all; }
+.text .link:hover { text-decoration: underline; }
+
+.actions { display: inline-flex; gap: 8px; }
+.btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.btn:hover { background: rgba(255,255,255,0.16); }
+.btn.primary { background: var(--accent); border-color: rgba(0,0,0,0.2); }
+.btn.primary:hover { background: #4338ca; }
+.btn.ghost { background: transparent; }
+
+.footnote { margin-top: 8px; color: var(--muted); font-size: 12px; }
+
+@media (max-width: 860px) {
+  .contact-grid { grid-template-columns: 1fr; }
+}

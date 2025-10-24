@@ -29,7 +29,7 @@ export default function Desktop({
     ], []
   );
 
-  const [windows, setWindows] = useState([]); // { id, appId, title, minimized, z, x, y }
+  const [windows, setWindows] = useState([]); // { id, appId, title, minimized, z, x, y, width, height }
   const [zCounter, setZCounter] = useState(10);
   const [isSmall, setIsSmall] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
@@ -68,6 +68,11 @@ export default function Desktop({
       const count = wins.length;
       const baseX = 80 + (count % 5) * 40;
       const baseY = 90 + (count % 5) * 30;
+      const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
+      const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+      const topbar = 44;
+      const availW = Math.max(320, Math.min(900, Math.floor(vw * 0.6)));
+      const availH = Math.max(240, Math.min(Math.floor((vh - topbar) * 0.7), 700));
       return [
         ...wins,
         {
@@ -78,6 +83,8 @@ export default function Desktop({
           z: nextZ,
           x: baseX,
           y: baseY,
+          width: availW,
+          height: availH,
         },
       ];
     });
@@ -94,16 +101,70 @@ export default function Desktop({
   };
 
   const dragWindow = (id, nextX, nextY) => {
-    // Clamp to viewport with some margins
+    // Coordinates are relative to .desktop-canvas (which is offset by topbar already)
     const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
     const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
     const topbar = 44;
-    const minX = 0, minY = topbar;
-    const maxX = vw - 200; // conservative width estimate
-    const maxY = vh - 120; // conservative height estimate
+    const canvasH = vh - topbar;
+    const minX = 0, minY = 0;
+    const maxX = vw - 120; // conservative width estimate
+    const maxY = canvasH - 80; // conservative height estimate within canvas
     const clampedX = Math.max(minX, Math.min(nextX, maxX));
     const clampedY = Math.max(minY, Math.min(nextY, maxY));
     setWindows((wins) => wins.map((w) => (w.id === id ? { ...w, x: clampedX, y: clampedY } : w)));
+  };
+
+  const resizeWindow = (id, nx, ny, nw, nh) => {
+    const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+    const topbar = 44;
+    const canvasH = vh - topbar;
+    const minW = 320, minH = 220;
+    const maxW = vw - 20;
+    const maxH = canvasH - 16;
+    const clampedW = Math.max(minW, Math.min(nw, maxW));
+    const clampedH = Math.max(minH, Math.min(nh, maxH));
+    const clampedX = Math.max(0, Math.min(nx, vw - clampedW));
+    const clampedY = Math.max(0, Math.min(ny, canvasH - clampedH));
+    setWindows((wins) => wins.map((w) => (w.id === id ? { ...w, x: clampedX, y: clampedY, width: clampedW, height: clampedH } : w)));
+  };
+
+  const snapWindowIfNeeded = (id) => {
+    const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+    const topbar = 44;
+    const areaX = 0, areaY = 0, areaW = vw, areaH = vh - topbar; // canvas area
+    const SNAP = 32; // px threshold to snap
+    setWindows((wins) => wins.map((w) => {
+      if (w.id !== id) return w;
+      const nearLeft = w.x <= SNAP;
+      const nearRight = areaX + areaW - (w.x + (w.width || 400)) <= SNAP;
+      const nearTop = w.y - areaY <= SNAP;
+      const nearBottom = areaY + areaH - (w.y + (w.height || 300)) <= SNAP;
+
+      // Corner snap (quarters)
+      if ((nearLeft && nearTop) || (nearLeft && nearBottom) || (nearRight && nearTop) || (nearRight && nearBottom)) {
+        const halfW = Math.floor(areaW / 2);
+        const halfH = Math.floor(areaH / 2);
+        const newW = halfW - 8;
+        const newH = halfH - 8;
+        const nx = nearLeft ? areaX + 4 : areaX + halfW + 4;
+        const ny = nearTop ? areaY + 4 : areaY + halfH + 4;
+        return { ...w, x: nx, y: ny, width: newW, height: newH };
+      }
+      // Side snap (halves)
+      if (nearLeft) {
+        return { ...w, x: areaX + 4, y: areaY + 4, width: Math.floor(areaW / 2) - 8, height: areaH - 8 };
+      }
+      if (nearRight) {
+        return { ...w, x: areaX + Math.floor(areaW / 2) + 4, y: areaY + 4, width: Math.floor(areaW / 2) - 8, height: areaH - 8 };
+      }
+      // Top snap (maximize height)
+      if (nearTop) {
+        return { ...w, x: Math.max(4, Math.min(w.x, areaW - (w.width || 400) - 4)), y: areaY + 4, height: areaH - 8 };
+      }
+      return w;
+    }));
   };
 
   return (
@@ -164,6 +225,8 @@ export default function Desktop({
               minimized={w.minimized}
               x={w.x}
               y={w.y}
+              width={w.width}
+              height={w.height}
               isFocused={w.z === maxZ}
               isMobileMode={isSmall}
               canDrag={!isSmall}
@@ -171,6 +234,8 @@ export default function Desktop({
               onClose={() => closeWindow(w.id)}
               onMinimize={() => minimizeWindow(w.id)}
               onDrag={(nx, ny) => dragWindow(w.id, nx, ny)}
+              onDragEnd={() => snapWindowIfNeeded(w.id)}
+              onResize={(nx, ny, nw, nh) => resizeWindow(w.id, nx, ny, nw, nh)}
             >
               <Comp />
             </AppWindow>

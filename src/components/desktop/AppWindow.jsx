@@ -7,6 +7,8 @@ export default function AppWindow({
   minimized,
   x,
   y,
+  width,
+  height,
   isFocused,
   canDrag = true,
   isMobileMode = false,
@@ -14,12 +16,15 @@ export default function AppWindow({
   onClose,
   onMinimize,
   onDrag,
+  onDragEnd,
+  onResize,
   children,
 }) {
   if (minimized) return null;
 
   const titleId = `window-title-${id}`;
   const draggingRef = useRef(null);
+  const resizingRef = useRef(null); // { dir, startX, startY, baseX, baseY, baseW, baseH }
   const [leaving, setLeaving] = useState(false);
   const contentRef = useRef(null);
   const [hasBottomFade, setHasBottomFade] = useState(false);
@@ -59,12 +64,41 @@ export default function AppWindow({
   };
 
   const onPointerMove = (e) => {
+    // Resizing has priority over dragging
+    if (resizingRef.current && onResize && !isMobileMode) {
+      const { dir, startX, startY, baseX, baseY, baseW, baseH } = resizingRef.current;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      const MIN_W = 320;
+      const MIN_H = 220;
+      let nx = baseX;
+      let ny = baseY;
+      let nw = baseW;
+      let nh = baseH;
+      if (dir.includes('e')) {
+        nw = Math.max(MIN_W, baseW + dx);
+      }
+      if (dir.includes('s')) {
+        nh = Math.max(MIN_H, baseH + dy);
+      }
+      if (dir.includes('w')) {
+        const newW = Math.max(MIN_W, baseW - dx);
+        nx = baseX + (baseW - newW);
+        nw = newW;
+      }
+      if (dir.includes('n')) {
+        const newH = Math.max(MIN_H, baseH - dy);
+        ny = baseY + (baseH - newH);
+        nh = newH;
+      }
+      onResize?.(nx, ny, nw, nh);
+      return;
+    }
     if (!canDrag) return;
     if (!draggingRef.current) return;
     const { startX, startY, baseX, baseY, active } = draggingRef.current;
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
-    // Require a small movement threshold to avoid accidental drags on touch
     if (!active) {
       const dist = Math.hypot(dx, dy);
       if (dist < 6) return;
@@ -76,15 +110,47 @@ export default function AppWindow({
   };
 
   const onPointerUp = (e) => {
-    if (!draggingRef.current) return;
-    draggingRef.current = null;
-    try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {}
+    // Complete resize or drag
+    if (resizingRef.current) {
+      resizingRef.current = null;
+      try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {}
+      return;
+    }
+    if (draggingRef.current) {
+      const wasActive = draggingRef.current.active;
+      draggingRef.current = null;
+      try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {}
+      if (wasActive) onDragEnd?.();
+    }
+  };
+
+  // Start resize from a handle
+  const startResize = (e, dir) => {
+    if (isMobileMode) return;
+    e.stopPropagation();
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch {}
+    resizingRef.current = {
+      dir,
+      startX: e.clientX,
+      startY: e.clientY,
+      baseX: x || 0,
+      baseY: y || 0,
+      baseW: width || 0,
+      baseH: height || 0,
+    };
+    onFocus?.();
   };
 
   return (
     <div
       className="app-window"
-      style={canDrag ? { zIndex, left: x || 0, top: y || 0 } : { zIndex }}
+      style={{
+        zIndex,
+        left: x || 0,
+        top: y || 0,
+        ...(width ? { width } : {}),
+        ...(height ? { height } : {}),
+      }}
       role="dialog"
       aria-labelledby={titleId}
       onMouseDown={onFocus}
@@ -133,6 +199,20 @@ export default function AppWindow({
 
       {/* Bottom fade sits outside the scroll area and the inner wrapper */}
       <div className={`scroll-fade-bottom${hasBottomFade ? ' visible' : ''}`} aria-hidden />
+
+      {/* Resize handles (hidden on mobile) */}
+      {!isMobileMode && (
+        <>
+          <div className="resize-handle n" onPointerDown={(e) => startResize(e, 'n')} />
+          <div className="resize-handle s" onPointerDown={(e) => startResize(e, 's')} />
+          <div className="resize-handle e" onPointerDown={(e) => startResize(e, 'e')} />
+          <div className="resize-handle w" onPointerDown={(e) => startResize(e, 'w')} />
+          <div className="resize-handle ne" onPointerDown={(e) => startResize(e, 'ne')} />
+          <div className="resize-handle nw" onPointerDown={(e) => startResize(e, 'nw')} />
+          <div className="resize-handle se" onPointerDown={(e) => startResize(e, 'se')} />
+          <div className="resize-handle sw" onPointerDown={(e) => startResize(e, 'sw')} />
+        </>
+      )}
     </div>
   );
 }

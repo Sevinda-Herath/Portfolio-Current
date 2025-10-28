@@ -134,6 +134,23 @@
   padding: 16px;
 }
 
+/* Desktop: place icons in a single column on the left, top-to-bottom */
+@media (min-width: 601px) {
+  .icons-grid {
+    position: absolute; /* anchor within desktop canvas */
+    top: 12px;
+    left: 12px;
+    right: auto;
+    bottom: auto;
+    display: grid;
+    grid-template-columns: 1fr; /* single column */
+    grid-auto-rows: auto;
+    gap: 14px; /* vertical spacing */
+    width: auto; /* shrink to content */
+    padding: 0; /* no internal padding so icons hug the edge */
+  }
+}
+
 .desktop-icon {
   display: flex;
   flex-direction: column;

@@ -12,12 +12,14 @@ export default function AppWindow({
   isFocused,
   canDrag = true,
   isMobileMode = false,
+  isMaximized = false,
   onFocus,
   onClose,
   onMinimize,
   onDrag,
   onDragEnd,
   onResize,
+  onToggleMaximize,
   children,
 }) {
   if (minimized) return null;
@@ -49,7 +51,7 @@ export default function AppWindow({
   }, [children]);
 
   const onPointerDown = (e) => {
-    if (!canDrag) return;
+  if (!canDrag) return;
     // Only begin drag if initiating on the titlebar area and NOT on window controls
     const target = e.target;
     if (!(target.closest && target.closest('.app-window-titlebar'))) return;
@@ -182,6 +184,17 @@ export default function AppWindow({
           >
             _
           </button>
+          {!isMobileMode && (
+            <button
+              type="button"
+              className="win-btn maximize"
+              onClick={() => onToggleMaximize?.()}
+              aria-label={`${isMaximized ? 'Restore' : 'Maximize'} ${title}`}
+              title={isMaximized ? 'Restore' : 'Maximize'}
+            >
+              {isMaximized ? '❐' : '☐'}
+            </button>
+          )}
           <button
             type="button"
             className="win-btn close"
@@ -205,7 +218,7 @@ export default function AppWindow({
       <div className={`scroll-fade-bottom${hasBottomFade ? ' visible' : ''}`} aria-hidden />
 
       {/* Resize handles (hidden on mobile) */}
-      {!isMobileMode && (
+      {!isMobileMode && !isMaximized && (
         <>
           <div className="resize-handle n" onPointerDown={(e) => startResize(e, 'n')} />
           <div className="resize-handle s" onPointerDown={(e) => startResize(e, 's')} />

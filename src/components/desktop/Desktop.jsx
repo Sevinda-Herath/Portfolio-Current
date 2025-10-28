@@ -29,7 +29,7 @@ export default function Desktop({
     ], []
   );
 
-  const [windows, setWindows] = useState([]); // { id, appId, title, minimized, z, x, y, width, height }
+  const [windows, setWindows] = useState([]); // { id, appId, title, minimized, z, x, y, width, height, maximized?, restoreRect? }
   const [zCounter, setZCounter] = useState(10);
   const [isSmall, setIsSmall] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
@@ -85,6 +85,7 @@ export default function Desktop({
           y: baseY,
           width: availW,
           height: availH,
+          maximized: false,
         },
       ];
     });
@@ -101,6 +102,8 @@ export default function Desktop({
   };
 
   const dragWindow = (id, nextX, nextY) => {
+    // Ignore drags on maximized windows
+    if (windows.find((w) => w.id === id)?.maximized) return;
     // Coordinates are relative to .desktop-canvas (which is offset by topbar already)
     const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
     const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
@@ -115,6 +118,8 @@ export default function Desktop({
   };
 
   const resizeWindow = (id, nx, ny, nw, nh) => {
+    // Ignore resizes on maximized windows
+    if (windows.find((w) => w.id === id)?.maximized) return;
     const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
     const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
     const topbar = 44;
@@ -127,6 +132,31 @@ export default function Desktop({
     const clampedX = Math.max(0, Math.min(nx, vw - clampedW));
     const clampedY = Math.max(0, Math.min(ny, canvasH - clampedH));
     setWindows((wins) => wins.map((w) => (w.id === id ? { ...w, x: clampedX, y: clampedY, width: clampedW, height: clampedH } : w)));
+  };
+
+  const toggleMaximize = (id) => {
+    const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+    const topbar = 44;
+    const areaX = 0, areaY = 0, areaW = vw, areaH = vh - topbar;
+    setWindows((wins) => wins.map((w) => {
+      if (w.id !== id) return w;
+      if (!w.maximized) {
+        const restoreRect = { x: w.x, y: w.y, width: w.width, height: w.height };
+        return {
+          ...w,
+          maximized: true,
+          restoreRect,
+          x: areaX + 4,
+          y: areaY + 4,
+          width: areaW - 8,
+          height: areaH - 8,
+        };
+      }
+      // Restore
+      const r = w.restoreRect || { x: w.x, y: w.y, width: w.width, height: w.height };
+      return { ...w, maximized: false, x: r.x, y: r.y, width: r.width, height: r.height };
+    }));
   };
 
   const snapWindowIfNeeded = (id) => {
@@ -229,13 +259,15 @@ export default function Desktop({
               height={w.height}
               isFocused={w.z === maxZ}
               isMobileMode={isSmall}
-              canDrag={!isSmall}
+              isMaximized={!!w.maximized}
+              canDrag={!isSmall && !w.maximized}
               onFocus={() => bringToFront(w.id)}
               onClose={() => closeWindow(w.id)}
               onMinimize={() => minimizeWindow(w.id)}
               onDrag={(nx, ny) => dragWindow(w.id, nx, ny)}
               onDragEnd={() => snapWindowIfNeeded(w.id)}
               onResize={(nx, ny, nw, nh) => resizeWindow(w.id, nx, ny, nw, nh)}
+              onToggleMaximize={() => toggleMaximize(w.id)}
             >
               <Comp />
             </AppWindow>

@@ -96,7 +96,7 @@ export default function DebianBoot({ onComplete, durationMs }) {
         ))}
         <div className="cursor" aria-hidden>_</div>
       </div>
-      <div className="skip-hint">Press Esc or click to skip</div>
+      <div className="skip-hint"></div>
     </div>
   );
 }

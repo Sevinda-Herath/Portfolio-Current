@@ -69,7 +69,7 @@ export default function GrubBoot({ onComplete, durationMs }) {
         </div>
         <div className="grub-help">Press enter to boot the selected OS.</div>
         <div className="grub-countdown">
-          Booting in {Math.ceil(remainingMs / 1000)}s... (press Enter to boot now)
+          Booting in {Math.ceil(remainingMs / 1000)}s...
         </div>
       </div>
     </div>

@@ -57,7 +57,15 @@
   box-sizing: border-box;
   overflow: hidden; /* prevent children from visually overflowing */
 }
-.avatar { text-align: center; display: grid; place-items: center; margin-bottom: 8px; }
+.avatar {
+  text-align: center;
+  display: grid;
+  place-items: center;
+  margin-bottom: 8px;
+  /* Ensure the logo container itself is centered within the panel */
+  margin-left: auto;
+  margin-right: auto;
+}
 .avatar img {
   width: clamp(48px, 22vw, 96px);
   height: auto;

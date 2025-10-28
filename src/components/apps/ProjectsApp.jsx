@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import './projects.css';
+import BoringAvatar from 'boring-avatars';
 
 /**
  * ProjectsApp — modern, filterable project showcase (responsive)
@@ -9,45 +10,59 @@ import './projects.css';
  * - Action buttons: Live Demo / View Code
  */
 export default function ProjectsApp() {
+  // User-provided projects (reworded) with generated thumbnails via BoringAvatar
   const allProjects = useMemo(() => [
     {
-      title: 'AI Anomaly Detector',
+      title: 'LSTM-Sentiment-Project---API-Server',
       blurb:
-        'Real-time anomaly detection pipeline using isolation forests with a streaming ingestion layer.',
-      tags: ['AI/ML', 'Data'],
-      code: 'https://github.com/Sevinda-Herath', // TODO: set repo link
-      demo: undefined, // Optional live link
-      image: 'https://via.placeholder.com/800x450.png?text=AI+Anomaly+Detector', // Optional image
-      imageAlt: 'Dashboard view of anomaly detector',
+        'End-to-end stock forecasting with LSTM enhanced by sentiment. Ingests price + news/social sentiment, trains models, evaluates, and visualizes predictions.',
+      tags: ['AI/ML', 'NLP', 'Time Series'],
+      code: 'https://github.com/Sevinda-Herath/LSTM-Sentiment-Project---API-Server',
     },
     {
-      title: 'Secure Auth Gateway',
+      title: 'LSTM-Sentiment-Project---ML-Models',
       blurb:
-        'Lightweight OAuth2/OpenID Connect proxy with JWT validation and rate limiting.',
-      tags: ['Security', 'Web'],
-      code: 'https://github.com/Sevinda-Herath', // TODO: set repo link
-      demo: undefined,
-      // image intentionally omitted to demonstrate fallback thumbnail
+        'LSTM stock price prediction enhanced with sentiment from financial news and social media. Includes preprocessing, training, evaluation metrics, and visualizations across 10 major tech stocks.',
+      tags: ['AI/ML', 'NLP', 'Time Series'],
+      code: 'https://github.com/Sevinda-Herath/LSTM-Sentiment-Project---ML-Models',
     },
     {
-      title: 'Portfolio (This Site)',
+      title: 'LSTM-Sentiment-Project---Website',
       blurb:
-        'Vite + React app simulating a Linux boot/login/desktop UX with windowed apps.',
-      tags: ['Web', 'UI'],
+        'Web front-end to explore sentiment analysis results and model outputs. A clean UI to interact with the underlying system.',
+      tags: ['Web', 'UI', 'Visualization'],
+      code: 'https://github.com/Sevinda-Herath/LSTM-Sentiment-Project---Website',
+    },
+    {
+      title: 'Portfolio-Old-V1',
+      blurb:
+        'My first portfolio iteration built with basic HTML, CSS, and JavaScript. A simple static site to showcase early projects.',
+      tags: ['Web'],
+      code: 'https://github.com/Sevinda-Herath/Portfolio-Old-V1',
+      demo: 'https://sevinda-herath.is-a.dev/Portfolio-Old-V1/',
+    },
+    {
+      title: 'Portfolio-Old-V2',
+      blurb:
+        'Second portfolio version—better structure and styling, still plain HTML/CSS/JS, focused on cleaner presentation.',
+      tags: ['Web'],
+      code: 'https://github.com/Sevinda-Herath/Portfolio-Old-V2',
+      demo: 'https://sevinda-herath.is-a.dev/Portfolio-Old-V2/',
+    },
+    {
+      title: 'Portfolio-Current',
+      blurb:
+        'This site: a Vite + React desktop-style UX with boot/login animations, windowed apps, and responsive design.',
+      tags: ['Web', 'UI', 'React'],
       code: 'https://github.com/Sevinda-Herath/portfolio-new',
-      demo: 'https://sevinda-herath.github.io/portfolio-new/',
-      image: 'https://via.placeholder.com/800x450.png?text=Portfolio+UI',
-      imageAlt: 'Portfolio desktop screenshot',
+      demo: 'https://sevinda-herath.is-a.dev',
     },
     {
-      title: 'Threat Intel Dashboard',
+      title: 'Concrete_Strength_Prediction_AI_Modal',
       blurb:
-        'Aggregates feeds, de-duplicates indicators, and surfaces trends with simple scoring.',
-      tags: ['Security', 'Data', 'Web'],
-      code: 'https://github.com/Sevinda-Herath', // TODO: set repo link
-      demo: undefined,
-      image: 'https://via.placeholder.com/800x450.png?text=Threat+Intel+Dashboard',
-      imageAlt: 'Threat intelligence dashboard overview',
+        'Simple regression model to predict concrete strength from its mixture components. Practical ML for materials engineering.',
+      tags: ['AI/ML', 'Engineering'],
+      code: 'https://github.com/Sevinda-Herath/Concrete_Strength_Prediction_AI_Model',
     },
   ], []);
 
@@ -110,15 +125,20 @@ export default function ProjectsApp() {
         ) : (
           filtered.map((p, i) => (
             <article key={i} className="card" aria-labelledby={`p-title-${i}`}>
-              {p.image ? (
-                <div className="card-thumb">
+              <div className={`card-thumb${p.image ? '' : ' fallback'}`}>
+                {p.image ? (
                   <img src={p.image} alt={p.imageAlt || `${p.title} cover`} loading="lazy" />
-                </div>
-              ) : (
-                <div className="card-thumb fallback" aria-hidden>
-                  <span className="thumb-icon" aria-hidden>🧩</span>
-                </div>
-              )}
+                ) : (
+                  <div className="thumb-avatar" aria-hidden>
+                    <BoringAvatar
+                      name={p.title}
+                      variant="marble"
+                      square
+                      colors={["#8ab4f8", "#b98cff", "#34d399", "#fbbf24", "#ef4444"]}
+                    />
+                  </div>
+                )}
+              </div>
               <div className="card-body">
                 <h3 id={`p-title-${i}`} className="card-title">{p.title}</h3>
                 <p className="card-blurb">{p.blurb}</p>

@@ -60,6 +60,8 @@
   place-items: center;
 }
 .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card-thumb .thumb-avatar { width: 100%; height: 100%; }
+.card-thumb .thumb-avatar svg { width: 100%; height: 100%; display: block; }
 .card-thumb.fallback {
   background: radial-gradient(80% 60% at 50% 40%, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
               linear-gradient(135deg, #232a3a, #1b1f2e);

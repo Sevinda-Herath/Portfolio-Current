@@ -30,7 +30,7 @@ export default function ProjectsApp() {
       title: 'LSTM-Sentiment-Project---Website',
       blurb:
         'Web front-end to explore sentiment analysis results and model outputs. A clean UI to interact with the underlying system.',
-      tags: ['Web', 'UI', 'Visualization'],
+      tags: ['Web', 'UI'],
       code: 'https://github.com/Sevinda-Herath/LSTM-Sentiment-Project---Website',
     },
     {
@@ -53,7 +53,7 @@ export default function ProjectsApp() {
       title: 'Portfolio-Current',
       blurb:
         'This site: a Vite + React desktop-style UX with boot/login animations, windowed apps, and responsive design.',
-      tags: ['Web', 'UI', 'React'],
+      tags: ['Web', 'UI'],
       code: 'https://github.com/Sevinda-Herath/portfolio-new',
       demo: 'https://sevinda-herath.is-a.dev',
     },

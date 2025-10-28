@@ -144,13 +144,17 @@ export default function AppWindow({
   return (
     <div
       className="app-window"
-      style={{
-        zIndex,
-        left: x || 0,
-        top: y || 0,
-        ...(width ? { width } : {}),
-        ...(height ? { height } : {}),
-      }}
+      style={
+        isMobileMode
+          ? { zIndex }
+          : {
+              zIndex,
+              left: x || 0,
+              top: y || 0,
+              ...(width ? { width } : {}),
+              ...(height ? { height } : {}),
+            }
+      }
       role="dialog"
       aria-labelledby={titleId}
       onMouseDown={onFocus}

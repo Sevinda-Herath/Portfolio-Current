@@ -462,14 +462,18 @@
   .app-window .app-window-titlebar { cursor: default; }
   /* Center window and fit display like a mobile app */
   .app-window {
-    position: fixed;
-    top: 48px; /* a bit below the top bar */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 96vw;
-    height: calc(100vh - 48px - 16px); /* below top bar with small bottom margin */
-    max-width: 96vw;
-    max-height: calc(100vh - 48px - 16px);
+    position: absolute; /* relative to desktop-canvas */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    height: auto;
+    transform: none;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+    box-shadow: none; /* fullscreen look */
     /* Make interface more opaque on mobile for readability */
     background: rgba(20, 20, 20, 0.98);
     border-color: rgba(255, 255, 255, 0.18);
@@ -478,7 +482,8 @@
   .app-window-content { flex: 1 1 auto; min-height: 0; }
 
   /* Denser titlebar and topbar transparency on mobile */
-  .app-window-titlebar { background: rgba(0, 0, 0, 0.45); }
+  .app-window-titlebar { background: rgba(0, 0, 0, 0.6); height: 48px; padding: 0 12px; }
+  .win-btn { width: 34px; height: 28px; }
   .topbar { background: rgba(20, 20, 20, 0.95); }
 
   /* Slightly stronger wallpaper/video tint for contrast */

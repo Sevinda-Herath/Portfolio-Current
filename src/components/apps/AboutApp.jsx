@@ -15,7 +15,14 @@ export default function AboutApp() {
         <section className="card profile" aria-labelledby="about-name">
           <div className="profile-hero">
             <div className="portrait">
-              <img src={profile} alt="Photo of Sevinda Herath" loading="lazy" />
+              <img
+                src={profile}
+                alt="Photo of Sevinda Herath"
+                decoding="async"
+                width="96"
+                height="96"
+                onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }}
+              />
             </div>
             <div className="identity">
               <h3 id="about-name" className="name">Sevinda Herath</h3>

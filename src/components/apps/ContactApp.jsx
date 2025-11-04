@@ -17,9 +17,9 @@ export default function ContactApp() {
     name: 'Sevinda Herath',
     role: 'Undergraduate — AI & Cybersecurity',
     location: 'Colombo, Sri Lanka',
-    email: 'you@example.com', // TODO: set your real email
+    email: 'info@sevinda-herath.is-a.dev', 
     github: 'https://github.com/Sevinda-Herath',
-    linkedin: 'https://linkedin.com/in/your-profile', // TODO: set your real LinkedIn
+    linkedin: 'https://linkedin.com/in/sevindaherath',
   }), []);
 
   const [copied, setCopied] = useState(false);

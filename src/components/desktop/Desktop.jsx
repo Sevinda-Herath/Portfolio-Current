@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import TopBar from './TopBar';
 import DesktopIcon from './DesktopIcon';
 import AppWindow from './AppWindow';
@@ -34,6 +34,12 @@ export default function Desktop({
   const [isSmall, setIsSmall] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
   const [showShutdown, setShowShutdown] = useState(false);
+
+  // Throttle drag/resize updates to once per frame for smoothness
+  const dragQueueRef = useRef(new Map()); // id -> { x, y }
+  const dragRafRef = useRef(0);
+  const resizeQueueRef = useRef(new Map()); // id -> { x, y, width, height }
+  const resizeRafRef = useRef(0);
 
   useEffect(() => {
     const update = () => setIsSmall(typeof window !== 'undefined' ? window.innerWidth <= 540 : false);
@@ -102,37 +108,64 @@ export default function Desktop({
   };
 
   const dragWindow = (id, nextX, nextY) => {
-    // Ignore drags on maximized windows
     if (windows.find((w) => w.id === id)?.maximized) return;
-    // Coordinates are relative to .desktop-canvas (which is offset by topbar already)
-    const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
-    const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
-    const topbar = 44;
-    const canvasH = vh - topbar;
-    const minX = 0, minY = 0;
-    const maxX = vw - 120; // conservative width estimate
-    const maxY = canvasH - 80; // conservative height estimate within canvas
-    const clampedX = Math.max(minX, Math.min(nextX, maxX));
-    const clampedY = Math.max(minY, Math.min(nextY, maxY));
-    setWindows((wins) => wins.map((w) => (w.id === id ? { ...w, x: clampedX, y: clampedY } : w)));
+    dragQueueRef.current.set(id, { x: nextX, y: nextY });
+    if (!dragRafRef.current) {
+      dragRafRef.current = requestAnimationFrame(() => {
+        const updates = dragQueueRef.current;
+        dragQueueRef.current = new Map();
+        dragRafRef.current = 0;
+        const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
+        const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+        const topbar = 44;
+        const canvasH = vh - topbar;
+        const minX = 0, minY = 0;
+        const maxX = vw - 120;
+        const maxY = canvasH - 80;
+        setWindows((wins) => wins.map((w) => {
+          const u = updates.get(w.id);
+          if (!u) return w;
+          const clampedX = Math.max(minX, Math.min(u.x, maxX));
+          const clampedY = Math.max(minY, Math.min(u.y, maxY));
+          return { ...w, x: clampedX, y: clampedY };
+        }));
+      });
+    }
   };
 
   const resizeWindow = (id, nx, ny, nw, nh) => {
-    // Ignore resizes on maximized windows
     if (windows.find((w) => w.id === id)?.maximized) return;
-    const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
-    const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
-    const topbar = 44;
-    const canvasH = vh - topbar;
-    const minW = 320, minH = 220;
-    const maxW = vw - 20;
-    const maxH = canvasH - 16;
-    const clampedW = Math.max(minW, Math.min(nw, maxW));
-    const clampedH = Math.max(minH, Math.min(nh, maxH));
-    const clampedX = Math.max(0, Math.min(nx, vw - clampedW));
-    const clampedY = Math.max(0, Math.min(ny, canvasH - clampedH));
-    setWindows((wins) => wins.map((w) => (w.id === id ? { ...w, x: clampedX, y: clampedY, width: clampedW, height: clampedH } : w)));
+    resizeQueueRef.current.set(id, { x: nx, y: ny, width: nw, height: nh });
+    if (!resizeRafRef.current) {
+      resizeRafRef.current = requestAnimationFrame(() => {
+        const updates = resizeQueueRef.current;
+        resizeQueueRef.current = new Map();
+        resizeRafRef.current = 0;
+        const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
+        const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+        const topbar = 44;
+        const canvasH = vh - topbar;
+        const minW = 320, minH = 220;
+        const maxW = vw - 20;
+        const maxH = canvasH - 16;
+        setWindows((wins) => wins.map((w) => {
+          const u = updates.get(w.id);
+          if (!u) return w;
+          const clampedW = Math.max(minW, Math.min(u.width, maxW));
+          const clampedH = Math.max(minH, Math.min(u.height, maxH));
+          const clampedX = Math.max(0, Math.min(u.x, vw - clampedW));
+          const clampedY = Math.max(0, Math.min(u.y, canvasH - clampedH));
+          return { ...w, x: clampedX, y: clampedY, width: clampedW, height: clampedH };
+        }));
+      });
+    }
   };
+
+  // Cleanup any pending RAF on unmount
+  useEffect(() => () => {
+    if (dragRafRef.current) cancelAnimationFrame(dragRafRef.current);
+    if (resizeRafRef.current) cancelAnimationFrame(resizeRafRef.current);
+  }, []);
 
   const toggleMaximize = (id) => {
     const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;

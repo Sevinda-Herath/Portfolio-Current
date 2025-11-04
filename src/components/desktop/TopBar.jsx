@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 export default function TopBar({ onLogoutRequested }) {
   const [now, setNow] = useState(new Date());
@@ -8,12 +8,12 @@ export default function TopBar({ onLogoutRequested }) {
     return () => clearInterval(t);
   }, []);
 
-  const formatter = new Intl.DateTimeFormat(undefined, {
+  const formatter = useMemo(() => new Intl.DateTimeFormat(undefined, {
     weekday: 'short',
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
-  });
+  }), []);
 
   const onLogout = () => {
     if (typeof onLogoutRequested === 'function') {

@@ -187,10 +187,9 @@
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.35);
   overflow: hidden;
-  animation: window-pop 160ms ease-out;
   box-sizing: border-box; /* keep padding/borders stable while resizing */
-  /* anchor for scroll fades placed as siblings to inner */
-  /* already positioned, so absolute children will anchor here */
+  will-change: transform, width, height; /* hint GPU acceleration during move/resize */
+  backface-visibility: hidden; /* avoid subpixel blurriness when animating transform */
 }
 
 /* Make inner wrapper fill the window and allow flex layout */
@@ -297,6 +296,9 @@
   from { transform: scale(0.98); opacity: 0.9; }
   to { transform: scale(1); opacity: 1; }
 }
+
+/* Move the pop animation to the inner wrapper so outer can own translate3d for positioning */
+.app-window-inner { animation: window-pop 160ms ease-out; }
 
 /* Mobile mode enter/exit animations */
 /* On mobile, animate the inner wrapper so the outer can keep translateX(-50%) centering */
@@ -486,7 +488,7 @@
     bottom: 0;
     width: auto;
     height: auto;
-    transform: none;
+    transform: none; /* disable translate3d in mobile full-screen mode */
     max-width: none;
     max-height: none;
     border-radius: 0;

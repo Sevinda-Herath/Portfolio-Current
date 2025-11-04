@@ -151,8 +151,10 @@ export default function AppWindow({
           ? { zIndex }
           : {
               zIndex,
-              left: x || 0,
-              top: y || 0,
+              left: 0,
+              top: 0,
+              transform: `translate3d(${x || 0}px, ${y || 0}px, 0)`,
+              willChange: 'transform,width,height',
               ...(width ? { width } : {}),
               ...(height ? { height } : {}),
             }

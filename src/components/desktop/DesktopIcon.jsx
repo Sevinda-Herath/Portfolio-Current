@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function DesktopIcon({ title, icon, onOpen }) {
+function DesktopIcon({ title, icon, onOpen }) {
   return (
     <button className="desktop-icon" onClick={onOpen} aria-label={`Open ${title}`}>
       <div className="desktop-icon-art" aria-hidden>{icon}</div>
@@ -8,3 +8,5 @@ export default function DesktopIcon({ title, icon, onOpen }) {
     </button>
   );
 }
+
+export default React.memo(DesktopIcon);

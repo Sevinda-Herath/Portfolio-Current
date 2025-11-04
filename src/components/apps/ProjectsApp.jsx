@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import './projects.css';
-import BoringAvatar from 'boring-avatars';
 
 /**
  * ProjectsApp — modern, filterable project showcase (responsive)
@@ -125,20 +124,7 @@ export default function ProjectsApp() {
         ) : (
           filtered.map((p, i) => (
             <article key={i} className="card" aria-labelledby={`p-title-${i}`}>
-              <div className={`card-thumb${p.image ? '' : ' fallback'}`}>
-                {p.image ? (
-                  <img src={p.image} alt={p.imageAlt || `${p.title} cover`} loading="lazy" />
-                ) : (
-                  <div className="thumb-avatar" aria-hidden>
-                    <BoringAvatar
-                      name={p.title}
-                      variant="marble"
-                      square
-                      colors={["#8ab4f8", "#b98cff", "#34d399", "#fbbf24", "#ef4444"]}
-                    />
-                  </div>
-                )}
-              </div>
+              {/* Thumbnail removed per request: no images/avatars in project cards */}
               <div className="card-body">
                 <h3 id={`p-title-${i}`} className="card-title">{p.title}</h3>
                 <p className="card-blurb">{p.blurb}</p>

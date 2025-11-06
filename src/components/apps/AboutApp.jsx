@@ -1,6 +1,6 @@
 import React from 'react';
 import './about.css';
-import profile from '../../assets/profile-image.jpeg';
+import profile from '../../assets/_4775c16e-f537-450b-8e7e-8e1f54a71a26.jpeg';
 
 export default function AboutApp() {
   return (

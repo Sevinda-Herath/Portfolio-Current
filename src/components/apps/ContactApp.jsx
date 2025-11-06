@@ -120,10 +120,6 @@ export default function ContactApp() {
               </div>
             </div>
           </div>
-
-          <div className="footnote" role="note">
-            Tip: Update your email and LinkedIn in <code>ContactApp.jsx</code>.
-          </div>
         </section>
       </div>
     </div>

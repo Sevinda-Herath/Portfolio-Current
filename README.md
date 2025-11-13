@@ -1,26 +1,64 @@
-## Portfolio (Vite + React)
+## Portfolio — Desktop-Style React App (Vite)
 
-This is a Vite + React portfolio. A minimal, production-ready copy of the site lives in the `deploy/` folder so you can upload it to any host.
+A personal portfolio presented as a mini desktop environment. It simulates a Linux boot, shows a GNOME-like login, and then launches a windowed desktop where you can open apps: About, Projects, and Contact. Built with React and Vite, with attention to smooth interactions, responsiveness, and accessibility.
 
-The site builds to `dist/`. The `deploy/` folder is regenerated from `dist/` using the scripts below.
+- Live demo: https://sevinda-herath.is-a.dev
+- Source: https://github.com/Sevinda-Herath/portfolio-new
 
-## Update the deploy folder after changes
+## What You See
 
-Any time you edit the site and want to publish the latest version:
+- Boot sequence: brief GRUB menu followed by a Debian-style boot log.
+- Login screen: clock, animated username/password typing, and a Sign In button.
+- Desktop: video wallpaper, top bar clock, welcome overlay, and three icons:
+	- About: profile, overview, and skills.
+	- Projects: searchable, tag-filterable project list with links.
+	- Contact: email copy/send, GitHub and LinkedIn links.
 
-1) Install dependencies (first time or after updates)
+## How It Works
+
+- Flow (first visit): GRUB → Debian boot → Login → Desktop.
+	- Subsequent visits skip boot/login using `localStorage` flags:
+		- `portfolio_hasBootedOnce`
+		- `portfolio_hasLoggedInOnce`
+- Background media is preloaded (`preloadVideos`) to reduce visual delays.
+- Window system:
+	- Open one window per app; brings to front on focus.
+	- Drag, resize from edges/corners, maximize/restore.
+	- Snap to halves/quarters when near screen edges; dock shows minimized apps.
+	- Mobile mode simplifies behavior (no drag/resize); smooth open/close animations.
+- Accessibility: semantic roles, ARIA labels, live regions for time, keyboard focus handling.
+
+## Tech Stack
+
+- React 18 + Vite 6
+- CSS modules (plain CSS files) for styling
+- Vitest + Testing Library (`jsdom`) for tests
+- Web App Manifest and basic icons/metadata (not a full PWA install flow)
+
+## Local Development
 
 ```bash
 npm ci
+npm start
 ```
 
-2) Rebuild with a portable base and refresh the minimal `deploy/` folder
+- Dev server runs at `http://localhost:3000` with hot reload.
+
+## Build and Deploy
+
+Standard build (for GitHub Pages at `/portfolio-new/`):
+
+```bash
+npm run build
+```
+
+Portable build and populate `deploy/` (works on any host/path):
 
 ```bash
 npm run deploy
 ```
 
-That runs a production build with relative asset paths and copies only the necessary files into `deploy/`:
+This produces `dist/` and then copies a minimal set into `deploy/`:
 
 - `deploy/index.html`
 - `deploy/assets/` (bundled JS/CSS/images/videos)
@@ -28,41 +66,42 @@ That runs a production build with relative asset paths and copies only the neces
 
 Upload the contents of `deploy/` to your hosting provider.
 
-## Commands and what they do
+Notes on base paths:
 
-All commands are defined in `package.json` under `scripts`.
+- GitHub Pages under this repo: keep Vite base as `/portfolio-new/` and use `npm run build`.
+- Any other host/subpath: use `npm run build:deploy` or simply `npm run deploy` (uses relative asset paths).
 
-- `npm start`
-	- Starts the dev server on http://localhost:3000 with hot reload.
+## Resetting the Experience
 
-- `npm test`
-	- Runs the test suite via Vitest.
+- Click the power icon in the top bar → Power Off to trigger a shutdown log; it clears `localStorage` and redirects.
+- Or manually clear the two `localStorage` keys shown above to see the boot/login again.
 
-- `npm run build`
-	- Standard Vite production build to `dist/` using the base from `vite.config.js` (currently `/portfolio-new/`). Use this for GitHub Pages under this repo name.
+## Project Structure (high level)
 
-- `npm run build:deploy`
-	- Production build to `dist/` with a portable relative base (`--base ./`). Use this when deploying the site anywhere (custom domain, subfolder, S3, etc.).
+- `src/components/boot/*`: GRUB + Debian boot screens.
+- `src/components/login/*`: GNOME-like login screen.
+- `src/components/desktop/*`: Desktop, top bar, icons, and generic `AppWindow`.
+- `src/components/apps/*`: App content for About, Projects, Contact.
+- `src/components/shutdown/*`: Power-off confirmation and shutdown log.
+- `src/utils/preloadMedia.js`: Video preloader helper.
 
-- `npm run deploy`
-	- Convenience script: runs `build:deploy`, then wipes and repopulates `deploy/` from `dist/`.
+## Commands
 
-- `npm run preview`
-	- Serves the production build locally (useful for a quick sanity check). If your `vite.config.js` base is a subpath, you may need to open the subpath URL.
+Defined in `package.json` under `scripts`:
 
-## Notes on base paths
-
-- GitHub Pages under this repository: keep `vite.config.js` base as `/portfolio-new/` and use `npm run build` (output expects that subpath).
-- Any other host or path: use `npm run build:deploy` or just `npm run deploy` to ensure assets use relative paths and work from any folder.
+- `npm start`: dev server with HMR on port 3000.
+- `npm test`: run tests with Vitest.
+- `npm run build`: production build to `dist/` using Vite base in `vite.config.js`.
+- `npm run build:deploy`: production build with relative base (`--base ./`).
+- `npm run deploy`: build with relative base and refresh `deploy/` from `dist/`.
+- `npm run preview`: locally serve the production build.
 
 ## Troubleshooting
 
-- Seeing 404s for JS/CSS after upload? Rebuild with `npm run build:deploy` (relative paths) and re-upload the `deploy/` contents.
-- SPA routing (client-side routes) showing 404s on refresh? Enable a fallback to `index.html` on your host (Netlify `_redirects`, Cloudflare Pages/Vercel setting, S3 static website error document).
-- Preview server already running? Free the port and restart preview.
+- Missing JS/CSS after upload? Rebuild with `npm run build:deploy` and re-upload `deploy/`.
+- SPA refresh 404s? Configure your host to fallback to `index.html`.
+- Preview port busy? Stop the other server or change the port.
 
-## Learn more
+## License
 
-- Vite: https://vitejs.dev/guide/
-- Vitest: https://vitest.dev/guide/
-- React: https://react.dev/
+See `LICENSE` for details.
